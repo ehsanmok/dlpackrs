@@ -1,0 +1,15 @@
+[package]
+name = "dlpack-sys"
+version = "0.1.0-dev.0"
+edition = "2021"
+authors = ["Ehsan M. Kermani"]
+license = "MIT OR Apache-2.0"
+description = "DLPack ffi"
+readme = "README.md"
+repository = "https://github.com/ehsanmok/dlpack-rs/tree/main/dlpack-sys"
+
+[build-dependencies]
+bindgen = "0.60"
+
+[package.metadata.workspaces]
+independent = true

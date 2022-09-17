@@ -1,0 +1,22 @@
+[package]
+name = "dlpackrs"
+version = "0.1.0-dev.0"
+edition = "2021"
+authors = ["Ehsan M. Kermani"]
+description = "DLPack safe Rust binding"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["dlpack", "ndarray", "tensor", "standard"]
+categories = ["machine-learning", "deep-learning", "scientific-computing", "ndarray", "tensor"]
+repository = "https://github.com/ehsanmok/dlpackrs"
+exclude = ["/.github", "/examples"]
+rust-version = "1.57.0"
+
+[workspace]
+members = ["dlpack-sys", "examples/sample"]
+
+[dependencies]
+dlpack-sys = { path = "dlpack-sys", version = "0.1.0-dev.0" }
+enumn = "0.1"
+pin-project = "1.0"
+thiserror = "1.0"
