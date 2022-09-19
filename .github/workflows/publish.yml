@@ -56,10 +56,11 @@ jobs:
           # Update changelog
           npm install -g auto-changelog@2.2.1
           auto-changelog --output CHANGELOG.md \
-                         --starting-version v0.1.0 \
+                         --starting-version v0.2.0 \
                          --latest-version "$VERSION" \
                          --merge-pattern 'Auto merge of #(\d+) - .+\n\n(.+)' \
                          --template changelog-template.hbs
+
           # Commit and publish
           git commit -am "Release $VERSION"
           git tag "v$VERSION"
