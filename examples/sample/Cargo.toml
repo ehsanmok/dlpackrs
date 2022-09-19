@@ -5,5 +5,5 @@ edition = "2021"
 publish = false
 
 [dependencies]
-dlpackrs = { path = "../..", version = "0.1.0-dev.0" }
+dlpackrs = { path = "../..", version = "0.1.0" }
 ndarray = { version = "0.15", features = ["approx"] }
