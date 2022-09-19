@@ -104,7 +104,7 @@ pub mod ffi {
 
 pub mod datatype;
 pub mod device;
-pub mod errors;
+mod errors;
 pub mod tensor;
 
 pub use datatype::{DataType, DataTypeCode};
