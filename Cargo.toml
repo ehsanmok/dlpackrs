@@ -9,6 +9,8 @@ license = "MIT OR Apache-2.0"
 keywords = ["dlpack", "ndarray", "tensor", "standard"]
 categories = ["machine-learning", "deep-learning", "scientific-computing", "ndarray", "tensor"]
 repository = "https://github.com/ehsanmok/dlpackrs"
+documentation = "https://docs.rs/dlpackrs"
+homepage = "https://crates.io/crates/dlpackrs"
 exclude = ["/.github", "/examples"]
 rust-version = "1.57.0"
 
