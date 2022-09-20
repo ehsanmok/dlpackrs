@@ -17,7 +17,7 @@ There are two main cases related to where the owner of the underlying data / sto
 
 In this case, `ManagedTensor` is built from `ManagedTensorProxy` which is a safe proxy for the unsafe `ffi::DLManagedTensor`.
 
-### Non-Memory Manged Tensor (View)
+### Plain Not-Memory-Managed Tensor
 
 In this case, the (invariant) Rust wrapper `Tensor` can be used or if needed the unsafe `ffi::DLTensor`.
 
@@ -25,21 +25,21 @@ In this case, the (invariant) Rust wrapper `Tensor` can be used or if needed the
 
 When ownership is concerned, one can use the `ManagedTensor`. Here is an example on how the bi-directional conversion
 
-<div align="center">ndarray::ArrayD <--> ManagedTensor</div>
+<div align="center">ndarray::ArrayD <---> ManagedTensor</div>
 
 is done at zero-cost.
 
 ```rust
-impl<'tensor, 'ctx> From<&'tensor mut ArrayD<f32>> for ManagedTensor<'tensor, 'ctx> {
+impl<'tensor, C> From<&'tensor mut ArrayD<f32>> for ManagedContext<'tensor, C> {
     fn from(t: &'tensor mut ArrayD<f32>) -> Self {
         let dlt: Tensor<'tensor> = Tensor::from(t);
-        let inner = DLManagedTensor::new(dlt.0, ptr::null_mut());
-        ManagedTensor(inner)
+        let inner = DLManagedTensor::new(dlt.0, None);
+        ManagedContext(inner)
     }
 }
 
-impl<'tensor, 'ctx> From<&mut ManagedTensor<'tensor, 'ctx>> for ArrayD<f32> {
-    fn from(mt: &mut ManagedTensor<'tensor, 'ctx>) -> Self {
+impl<'tensor, C> From<&mut ManagedContext<'tensor, C>> for ArrayD<f32> {
+    fn from(mt: &mut ManagedContext<'tensor, C>) -> Self {
         let dlt: DLTensor = mt.0.inner.dl_tensor.into();
         unsafe {
             let arr = RawArrayViewMut::from_shape_ptr(dlt.shape().unwrap(), dlt.data() as *mut f32);
@@ -51,7 +51,7 @@ impl<'tensor, 'ctx> From<&mut ManagedTensor<'tensor, 'ctx>> for ArrayD<f32> {
 
 And when ownership is not concerned, one can use `Tensor` as a view. Here is an example on how the bi-directional converion
 
-<div align="center">ndarray::ArrayD <--> Tensor</div>
+<div align="center">ndarray::ArrayD <---> Tensor</div>
 
 is done at zero-cost.
 
