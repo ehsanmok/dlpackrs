@@ -1,6 +1,6 @@
 [package]
 name = "dlpackrs"
-version = "0.2.0-dev.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Ehsan M. Kermani"]
 description = "DLPack safe Rust binding"
@@ -18,7 +18,7 @@ rust-version = "1.57.0"
 members = ["dlpack-sys", "examples/sample"]
 
 [dependencies]
-dlpack-sys = { path = "dlpack-sys", version = "0.1.0" }
+dlpack-sys = { path = "dlpack-sys", version = "0.1.1" }
 enumn = "0.1"
 pin-project = "1.0"
 thiserror = "1.0"

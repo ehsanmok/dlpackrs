@@ -1,6 +1,6 @@
 [package]
 name = "dlpack-sys"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Ehsan M. Kermani"]
 license = "MIT OR Apache-2.0"
