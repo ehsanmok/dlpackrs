@@ -1,8 +1,8 @@
-#![allow(clippy::drop_copy)]
+#![allow(clippy::drop_ref)]
 
-use std::{ffi::c_void, mem, ptr};
+use std::ffi::c_void;
 
-use dlpackrs::{ffi, DataType, Device, ManagedTensor as DLManagedTensor, Tensor as DLTensor};
+use dlpackrs::{DataType, Device, ManagedTensor as DLManagedTensor, Tensor as DLTensor};
 use ndarray::{Array, ArrayD, RawArrayViewMut};
 
 #[derive(Debug)]
@@ -32,19 +32,20 @@ impl<'tensor> From<&'tensor mut Tensor<'tensor>> for ArrayD<f32> {
     }
 }
 
+// The context holds DLManagedTensor
 #[derive(Debug)]
-pub struct ManagedTensor<'tensor, 'ctx>(DLManagedTensor<'tensor, 'ctx>);
+pub struct ManagedContext<'tensor, C>(DLManagedTensor<'tensor, C>);
 
-impl<'tensor, 'ctx> From<&'tensor mut ArrayD<f32>> for ManagedTensor<'tensor, 'ctx> {
+impl<'tensor, C> From<&'tensor mut ArrayD<f32>> for ManagedContext<'tensor, C> {
     fn from(t: &'tensor mut ArrayD<f32>) -> Self {
         let dlt: Tensor<'tensor> = Tensor::from(t);
-        let inner = DLManagedTensor::new(dlt.0, ptr::null_mut());
-        ManagedTensor(inner)
+        let inner = DLManagedTensor::new(dlt.0, None);
+        ManagedContext(inner)
     }
 }
 
-impl<'tensor, 'ctx> From<&mut ManagedTensor<'tensor, 'ctx>> for ArrayD<f32> {
-    fn from(mt: &mut ManagedTensor<'tensor, 'ctx>) -> Self {
+impl<'tensor, C> From<&mut ManagedContext<'tensor, C>> for ArrayD<f32> {
+    fn from(mt: &mut ManagedContext<'tensor, C>) -> Self {
         let dlt: DLTensor = mt.0.inner.dl_tensor.into();
         unsafe {
             let arr = RawArrayViewMut::from_shape_ptr(dlt.shape().unwrap(), dlt.data() as *mut f32);
@@ -70,16 +71,11 @@ fn main() {
     let pong = ArrayD::from(&mut tensor);
     println!("pong {:?}", pong);
     assert!(pong.into_dyn().abs_diff_eq(&ping, 1e-8f32));
-    // TODO: use dummy ctx holding the managed_tensor
-    let mut managed_tensor = ManagedTensor::from(&mut ping);
+    let mut managed_tensor: ManagedContext<f32> = (&mut ping).into();
     println!("managed tensor {:?}", managed_tensor);
-    let deleter = unsafe {
-        mem::transmute::<fn(&mut ManagedTensor), unsafe extern "C" fn(*mut ffi::DLManagedTensor)>(
-            |mt| {
-                println!("deleter is called!");
-                drop(mt as *mut _);
-            },
-        )
+    let deleter: fn(&mut DLManagedTensor<f32>) = |managed_tensor| {
+        println!("manager tensor deleter is called");
+        drop(managed_tensor);
     };
     managed_tensor.0.set_deleter(deleter);
     println!("managed tensor with deleter {:?}", managed_tensor);
